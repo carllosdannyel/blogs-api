@@ -20,8 +20,12 @@ const createUser = async ({ displayName, email, password, image }) => {
 };
 
 const getAllUsers = async () => {
-  const users = await User.findAll();
-  
+  const users = await User.findAll({
+    attributes: { exclude: ['password'] },
+  });
+
+  console.log(users);
+
   return { type: null, message: users };
 };
 

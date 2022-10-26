@@ -1,7 +1,7 @@
 const { User } = require('../models');
 const jwt = require('../utils/jwt');
 
-const login = async ({ email, password }) => {
+const validateLogin = async ({ email, password }) => {
   const user = await User.findOne({ where: { email } });
 
   if (!user || user.password !== password) {
@@ -16,5 +16,5 @@ const login = async ({ email, password }) => {
 };
 
 module.exports = {
-  login,
+  validateLogin,
 };
