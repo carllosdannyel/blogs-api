@@ -6,5 +6,6 @@ const postFields = require('../middlewares/post.fields');
 const Router = express.Router();
 
 Router.post('/', validateToken, postFields, postController.createPost);
+Router.get('/', validateToken, postController.getAllPostsByUser);
 
 module.exports = Router;

@@ -1,4 +1,4 @@
-const { Category, BlogPost, PostCategory } = require('../models');
+const { Category, User, BlogPost, PostCategory } = require('../models');
 
 const getCategoryById = async (id) => Category.findByPk(id);
 
@@ -17,14 +17,25 @@ const createPost = async (id, { title, content, categoryIds }) => {
     return { type: 'BAD_REQUEST', message: 'one or more "categoryIds" not found' };
   }
 
-  const blogPost = await createBlogPost(id, title, content);
+  const { dataValues } = await createBlogPost(id, title, content);
 
   await Promise.all(categoryIds.map((categoryId) =>
-      createPostCategory(blogPost.dataValues.id, categoryId)));
+      createPostCategory(dataValues.id, categoryId)));
 
-  return { type: null, message: blogPost.dataValues };
+  return { type: null, message: dataValues };
+};
+
+const getAllPostsByUser = async ({ id }) => {
+    const posts = await BlogPost.findAll({
+        include: [
+            { model: User, as: 'user', where: { id }, attributes: { exclude: ['password'] } },
+            { model: Category, as: 'categories', through: { attributes: [] } },
+        ],
+    });
+    return { type: null, message: posts };
 };
 
 module.exports = {
   createPost,
+  getAllPostsByUser,
 };
