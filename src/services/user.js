@@ -14,6 +14,7 @@ const createUser = async ({ displayName, email, password, image }) => {
   const newUser = await User.create({ displayName, email, password, image });
 
   const { password: _, ...userWithoutPassword } = newUser.toJSON();
+  
   const token = jwt.createToken(userWithoutPassword);
 
   return { type: null, message: { token } };
