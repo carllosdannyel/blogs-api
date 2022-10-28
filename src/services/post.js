@@ -3,13 +3,7 @@ const { Category, User, BlogPost, PostCategory } = require('../models');
 const getCategoryById = async (id) => Category.findByPk(id);
 
 const createBlogPost = async (id, title, content) =>
-  BlogPost.create({
-    title,
-    content,
-    userId: id,
-    published: new Date(),
-    updated: new Date(),
-  });
+  BlogPost.create({ title, content, userId: id, published: new Date(), updated: new Date() });
 
 const createPostCategory = async (postId, categoryId) =>
   PostCategory.create({ postId, categoryId });
@@ -38,15 +32,8 @@ const createPost = async (id, { title, content, categoryIds }) => {
 
 const getAllPostsByUser = async ({ id }) => {
   const posts = await BlogPost.findAll({
-    include: [
-      {
-        model: User,
-        as: 'user',
-        where: { id },
-        attributes: { exclude: ['password'] },
-      },
-      { model: Category, as: 'categories', through: { attributes: [] } },
-    ],
+    include: [{ model: User, as: 'user', where: { id }, attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } }],
   });
 
   return { type: null, message: posts };
@@ -61,12 +48,7 @@ const getUserPostById = async (id, user) => {
 
   const post = await BlogPost.findByPk(id, {
     include: [
-      {
-        model: User,
-        as: 'user',
-        where: { id: user.id },
-        attributes: { exclude: ['password'] },
-      },
+      { model: User, as: 'user', where: { id: user.id }, attributes: { exclude: ['password'] } },
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
@@ -74,8 +56,34 @@ const getUserPostById = async (id, user) => {
   return { type: null, message: post };
 };
 
+const getOnePostById = async (id) => BlogPost.findOne(
+  { where: { id }, attributes: ['userId'] },
+);
+
+const updatePost = async (title, content, id) => BlogPost
+  .update({ title, content, updated: new Date() }, { where: { id } });
+
+const getPostUpdated = async (user, id) => BlogPost.findByPk(id, {
+  include: [
+    { model: User, as: 'user', where: { id: user.id }, attributes: { exclude: ['password'] } },
+    { model: Category, as: 'categories', through: { attributes: [] } }],
+});
+
+const updatePostById = async (title, content, id, user) => {
+  const { dataValues } = await getOnePostById(id);
+
+  if (user.id !== dataValues.userId) return { type: 'UNAUTHORIZED', message: 'Unauthorized user' };
+
+  await updatePost(title, content, id);
+
+  const postUpdated = await getPostUpdated(user, id);
+
+  return { type: null, message: postUpdated };
+};
+
 module.exports = {
   createPost,
   getAllPostsByUser,
   getUserPostById,
+  updatePostById,
 };
