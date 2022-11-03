@@ -81,9 +81,24 @@ const updatePostById = async (title, content, id, user) => {
   return { type: null, message: postUpdated };
 };
 
+const deletePostById = async (userId, paramsId) => {
+  const post = await BlogPost.findByPk(paramsId, { where: userId });
+
+  if (!post) return { type: 'NOT_FOUND', message: 'Post does not exist' };
+
+  if (post.dataValues.userId !== userId) {
+    return { type: 'UNAUTHORIZED', message: 'Unauthorized user' };
+  } 
+
+  await BlogPost.destroy({ where: { id: paramsId } });
+
+  return { type: null, message: '' };
+};
+
 module.exports = {
   createPost,
   getAllPostsByUser,
   getUserPostById,
   updatePostById,
+  deletePostById,
 };
