@@ -7,6 +7,7 @@ const editPostFields = require('../middlewares/edit.post.fields');
 const Router = express.Router();
 
 Router.post('/', validateToken, postFields, postController.createPost);
+Router.get('/search', validateToken, postController.getPostByName);
 Router.get('/', validateToken, postController.getAllPostsByUser);
 Router.get('/:id', validateToken, postController.getUserPostById);
 Router.put('/:id', validateToken, editPostFields, postController.updatePostById);

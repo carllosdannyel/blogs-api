@@ -32,10 +32,17 @@ const deletePostById = async (req, res) => {
   res.status(204).json(message);
 };
 
+const getPostByName = async (req, res) => {
+  const { type, message } = await postService.getPostByName(req.query.q, req.user);
+  if (type) return res.status(mapError(type)).json({ message });
+  res.status(200).json(message);
+};
+
 module.exports = {
   createPost,
   getAllPostsByUser,
   getUserPostById,
   updatePostById,
   deletePostById,
+  getPostByName,
 };
