@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Blogs API Readme</title>
   </head>
   <body>
     <h1>Blogs API Readme</h1>
